@@ -1,4 +1,4 @@
-age = int(input("PLease input your age: "))
+age = int(input("PLease input your age: ")) #task 1 age
 
 if age > 22:
     print("Work")
@@ -10,7 +10,7 @@ else:
     print("Kindergarten")
 
 
-def somefunction (somenumber):
+def somefunction (somenumber): #task 2 strings comparison
     return somenumber
 
 userinput = str(input("Введите любое слово: "))

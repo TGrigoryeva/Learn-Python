@@ -1,4 +1,5 @@
-list_of_names = ["Вася", "Маша", "Петя", "Валера", "Саша", "Даша"]
+#task 1
+list_of_names = ["Вася", "Маша", "Петя", "Валера", "Саша", "Даша"] 
 while True:
     name = list_of_names.pop() # функция pop выполняет 2 действия: возвращает последний или указанный элемент списка, а затем удаляет его из списка
     print("Текущее имя:", name)
@@ -6,8 +7,8 @@ while True:
         print("Валера нашелся!")
         break
 
-
-list_of_names = ["Вася", "Маша", "Петя", "Валера", "Саша", "Даша"]
+#task 2
+list_of_names = ["Вася", "Маша", "Петя", "Валера", "Саша", "Даша"] 
 
 def find_person(names):
     while True:
@@ -20,19 +21,36 @@ def find_person(names):
 find_person(list_of_names)
 
 
-def get_answer():
-    while True:
-        question = str.lower(input("Какой у Вас вопрос? "))
-        if question == "пока":
-            break
-        else:
-            print("Я не знаю ответа на вопрос {}".format(question))
 
-def ask_user():
+#task 3
+def ask_user(): 
     while True:
         answer = str.lower(input("Как дела? "))
-        get_answer() # я вообще не поняла по условиям задачи, куда впиндюрить эту функцию
         if answer == "хорошо":
             print("Ну и зашибись")
             break
 ask_user()
+
+
+#task 4 
+import datetime;
+
+get_answer_dict = {"привет!": "Привет!", "как дела?": "Отлично!", "в чем смысл жизни?": "Смысла нет", "время": datetime.datetime.now()}
+
+def get_answer(question):
+   return print(get_answer_dict.get(question))
+ 
+
+def ask_user1(): 
+    try:  
+        while True:
+            question = str.lower(input("Напиши что-нибудь: "))
+            if question == "пока":
+                print("Пока!")
+                break
+            else:
+                get_answer(question)    
+    except KeyboardInterrupt: #task 2 "exceptions"
+        return
+
+ask_user1()
