@@ -4,6 +4,7 @@ import time
 import datetime
 import ephem
 
+
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
                     filename='bot.log'
@@ -58,6 +59,46 @@ def tell_me_constellation(bot, update):
         update.message.reply_text(planet_text)  
         print(planet_text)
         
+def wordcount(bot, update):
+
+    wordcount_text = "Вызван /wordcount"
+    print("Вызван /wordcount")
+    update.message.reply_text(wordcount_text)
+    user_text_wordcount = len(update.message.text[10:].split())  
+    #print(len(user_text_wordcount.split()), "слова")
+     
+    update.message.reply_text(str(user_text_wordcount) + " слова")
+
+def calc(bot, update):
+    calc_text = "Вызван /calc"
+    print("Вызван /calc")
+    update.message.reply_text(calc_text)
+    user_text_calc = update.message.text
+    print(user_text_calc)
+    u = list(user_text_calc[5:])
+    print(u)
+    spec_symbols = ["*", "/", "-", "+"]
+
+    if int(u[3]) == 0:
+        update.message.reply_text("Делить на 0 нельзя")
+
+    if u[2] in spec_symbols:
+        if u[2] == "*":
+            res = float(u[1])*float(u[3])
+            
+        elif u[2] == "/":
+            res = float(u[1])/float(u[3])
+            
+        elif u[2] == "-":
+            res = float(u[1])-float(u[3])
+            
+        elif u[2] == "+":
+            res = float(u[1])+float(u[3])
+    else:
+        update.message.reply_text("Пропущен арифметический знак")
+
+    update.message.reply_text(res)  
+    print(res)
 
 def main():
     updater = Updater("391815648:AAE0qLcbOCSna_pE5y1wNqpT302FaKgu3pc")
@@ -65,6 +106,8 @@ def main():
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     dp.add_handler(CommandHandler("planet", tell_me_constellation))
+    dp.add_handler(CommandHandler("calc", calc))
+    dp.add_handler(CommandHandler("wordcount", wordcount))
 
     updater.start_polling()
     updater.idle()
