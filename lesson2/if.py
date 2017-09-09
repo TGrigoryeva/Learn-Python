@@ -10,17 +10,19 @@ else:
     print("Kindergarten")
 
 
-def somefunction (somenumber): #task 2 strings comparison
-    return somenumber
+#task 2 strings comparison 
 
-userinput = str(input("Введите любое слово: "))
+userinput = str(input("Введите любое слово: ")) 
 userinput1 = str(input("Введите другое слово, лучше \"learn\": "))
 
-if len(userinput) == len(userinput1):
-    print(somefunction(1))
-elif userinput1=="learn":
-    print(somefunction(3))
-elif len(userinput) > len(userinput1):
-    print(somefunction(2))
-else: 
-    print(somefunction("ХЗ что тогда возвращать, в задании не сказано"))
+def somefunction (arg,arg1):
+    if len(arg) == len(arg1): 
+        return 1 
+    elif userinput1=="learn": 
+        return 3 
+    elif len(arg) > len(arg1): 
+        return 2
+    else:  
+        return "ХЗ что тогда возвращать, в задании не сказано"
+
+print(somefunction (userinput,userinput1))
