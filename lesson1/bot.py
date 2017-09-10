@@ -76,48 +76,55 @@ def calc(bot, update):
     calc_text = "Вызван /calc"
     print("Вызван /calc")
     update.message.reply_text(calc_text)
+    try:
+        user_text_calc= update.message.text
+        user_text_calc_corr = user_text_calc.lower().replace(" ","")
 
-    user_text_calc= update.message.text
-    user_text_calc_corr = user_text_calc.lower().replace(" ","")
+        if user_text_calc_corr[-1] != "=":
+            update.message.reply_text("отсутствует знак \"=\"")
+            return 
 
-    if user_text_calc_corr[-1] != "=":
-        update.message.reply_text("отсутствует знак \"=\"")
-        return 
+        action = user_text_calc_corr[5:-1]
+        print("ПОСЛЕ РАЗРЕЗАНИЯ В ACTION ЛЕЖИТ", action)
 
-    action = user_text_calc_corr[5:-1]
-    print("ПОСЛЕ РАЗРЕЗАНИЯ В ACTION ЛЕЖИТ", action)
+        total = None
 
-    for operation in range(len(action)):
+        for operation in range(len(action)):
 
-        print("Смотрим на",action[operation])
+            print("Смотрим на",action[operation])
 
-        if action[operation] == "+":
-            nums = list(map(float, action.split("+")))
-            total = sum(nums)
-            break
-
-        elif action[operation] == "-":
-            nums = list(map(float, action.split("-")))
-            total = nums[0]-nums[1]
-            break
-
-        elif action[operation] == "*":
-            nums = list(map(float, action.split("*")))
-            total = nums[0]*nums[1]
-            break
-
-        elif action[operation] == "/":
-            nums = list(map(float, action.split("/")))
-            try:
-                total = nums[0]/nums[1]
+            if action[operation] == "+":
+                nums = list(map(float, action.split("+")))
+                total = sum(nums)
                 break
-            except ZeroDivisionError:
-                update.message.reply_text("На ноль делить нельзя, попробуйте еще раз")
-        else:
+
+            elif action[operation] == "-":
+                nums = list(map(float, action.split("-")))
+                total = nums[0]-nums[1]
+                break
+
+            elif action[operation] == "*":
+                nums = list(map(float, action.split("*")))
+                total = nums[0]*nums[1]
+                break
+
+            elif action[operation] == "/":
+                nums = list(map(float, action.split("/")))
+                try:
+                    total = nums[0]/nums[1]
+                    break
+                except ZeroDivisionError:
+                    update.message.reply_text("На ноль делить нельзя, попробуйте еще раз")
+            
+        if total == None:
             update.message.reply_text("Пропущен арифметический знак")
-            break
-        
-    update.message.reply_text(total) 
+        else:
+            update.message.reply_text(total)
+                
+    except (TypeError, ValueError):
+        update.message.reply_text("Введено некорректное значение")
+
+     
 
 #var.2 advanced calc. не работает со скобками
 '''    
