@@ -70,35 +70,111 @@ def wordcount(bot, update):
     update.message.reply_text(str(user_text_wordcount) + " слова")
 
 def calc(bot, update):
+
+    #var.1 - 2 variables calc
+
     calc_text = "Вызван /calc"
     print("Вызван /calc")
     update.message.reply_text(calc_text)
-    user_text_calc = update.message.text
-    print(user_text_calc)
-    u = list(user_text_calc[5:])
-    print(u)
-    spec_symbols = ["*", "/", "-", "+"]
 
-    if int(u[3]) == 0:
-        update.message.reply_text("Делить на 0 нельзя")
+    user_text_calc= update.message.text
+    user_text_calc_corr = user_text_calc.lower().replace(" ","")
 
-    if u[2] in spec_symbols:
-        if u[2] == "*":
-            res = float(u[1])*float(u[3])
-            
-        elif u[2] == "/":
-            res = float(u[1])/float(u[3])
-            
-        elif u[2] == "-":
-            res = float(u[1])-float(u[3])
-            
-        elif u[2] == "+":
-            res = float(u[1])+float(u[3])
-    else:
-        update.message.reply_text("Пропущен арифметический знак")
+    if user_text_calc_corr[-1] != "=":
+        update.message.reply_text("отсутствует знак \"=\"")
+        return 
 
-    update.message.reply_text(res)  
-    print(res)
+    action = user_text_calc_corr[5:-1]
+    print("ПОСЛЕ РАЗРЕЗАНИЯ В ACTION ЛЕЖИТ", action)
+
+    for operation in range(len(action)):
+
+        print("Смотрим на",action[operation])
+
+        if action[operation] == "+":
+            nums = list(map(float, action.split("+")))
+            total = sum(nums)
+            break
+
+        elif action[operation] == "-":
+            nums = list(map(float, action.split("-")))
+            total = nums[0]-nums[1]
+            break
+
+        elif action[operation] == "*":
+            nums = list(map(float, action.split("*")))
+            total = nums[0]*nums[1]
+            break
+
+        elif action[operation] == "/":
+            nums = list(map(float, action.split("/")))
+            try:
+                total = nums[0]/nums[1]
+                break
+            except ZeroDivisionError:
+                update.message.reply_text("На ноль делить нельзя, попробуйте еще раз")
+        else:
+            update.message.reply_text("Пропущен арифметический знак")
+            break
+        
+    update.message.reply_text(total) 
+
+#var.2 advanced calc. не работает со скобками
+'''    
+    calc_text = "Вызван /calc"
+    print("Вызван /calc")
+    update.message.reply_text(calc_text)
+
+    user_text_calc= update.message.text
+
+    try:
+        user_text_calc_corr = user_text_calc.lower().replace(" ","")
+         parts = user_text_calc_corr.split("+")
+
+        for plus in range(len(parts)):
+            if "-" in parts[plus]:
+                parts[plus] = user_text_calc_corr_parts[plus].split("-")
+
+        for plus in range(len(parts)):
+            parts[plus] = precalculator(parts[plus])
+
+        print(parts)
+        result = sum(parts)
+    except ValueError:
+        result = "Error"
+    except ZeroDivisionError:
+        result = "Нельзя делить на ноль"
+    return result
+
+
+def precalculator(part):
+
+    if type(part) is str:
+
+        if "*" in part:
+            result = 1
+            for subpart in part.split("*"):
+                result *= precalculator(subpart)
+            return result
+
+        elif "/" in part:
+            parts = list(map(float, part.split("/"))) #map означает, что для всех частей нужно прогнать функцию float
+            result = parts[0]
+            for subpart in parts[1:]:
+                result /=subpart
+                return result
+
+        else:
+            return float(part)
+
+    elif type(part) is list:
+        for i in range(len(part))
+            part[i] = precalculator(part[i]) # рекурсия,т.е. функция вызывает саму себя
+        return part[0] - sum(part[1:])
+
+    return part
+
+'''
 
 def main():
     updater = Updater("391815648:AAE0qLcbOCSna_pE5y1wNqpT302FaKgu3pc")
