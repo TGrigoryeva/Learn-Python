@@ -1,4 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import telegram
 import logging
 import time
 import datetime
@@ -14,6 +15,7 @@ def greet_user(bot, update):
     text = 'Вызван /start'
     print(text)
     update.message.reply_text(text)
+
 
 def talk_to_me(bot, update):
     user_text = update.message.text 
@@ -76,6 +78,13 @@ def calc(bot, update):
     calc_text = "Вызван /calc"
     print("Вызван /calc")
     update.message.reply_text(calc_text)
+
+    custom_keyboard = [["1", "2", "3", "/"], ["4", "5", "6", "*"], ["7", "8", "9", "+"], ["Esc", "0", "=", "-"]]
+    reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+    bot.send_message(chat_id=update.message.chat.id, #добавлен update.message.chat.id
+                 text="Custom Keyboard Test", 
+                 reply_markup=reply_markup)
+
     try:
         user_text_calc= update.message.text
         user_text_calc_corr = user_text_calc.lower().replace(" ","")
