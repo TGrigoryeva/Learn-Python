@@ -4,6 +4,7 @@ import logging
 import time
 import datetime
 import ephem
+import re
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
@@ -199,6 +200,27 @@ def calc2(bot,update):
     if total == None: # не понимаю, как сделать эту проверку
         update.message.reply_text("Введено некорректное значение")
 
+def nextfullmoon(bot,update):
+
+    next_moon_text = "Вызван /nextfullmoon"
+    print("Вызван /nextfullmoon")
+    update.message.reply_text(next_moon_text)
+
+    when_next_full_moon_question = update.message.text
+    print(when_next_full_moon_question)
+
+    find_date_in_next_full_moon_question = re.findall(r'\d{4}-\d{2}-\d{2}' , when_next_full_moon_question)
+    print(find_date_in_next_full_moon_question)
+
+    find_date_in_next_full_moon_question_String = ''.join(find_date_in_next_full_moon_question).replace("-","/")
+    print(find_date_in_next_full_moon_question_String)
+
+    next_full_moon_date = datetime.datetime.strptime(find_date_in_next_full_moon_question_String, "%Y/%d/%m")
+    print(ephem.next_full_moon(next_full_moon_date))
+
+    update.message.reply_text(ephem.next_full_moon(next_full_moon_date))
+
+
 #var.2 advanced calc. не работает со скобками
 '''    
     calc_text = "Вызван /calc"
@@ -265,6 +287,7 @@ def main():
     dp.add_handler(CommandHandler("calc", calc)) #25*25=
     dp.add_handler(CommandHandler("calc2", calc2)) #со словарным вводом от 1 до 10
     dp.add_handler(CommandHandler("wordcount", wordcount))
+    dp.add_handler(CommandHandler("nextfullmoon", nextfullmoon))
 
     updater.start_polling()
     updater.idle()
