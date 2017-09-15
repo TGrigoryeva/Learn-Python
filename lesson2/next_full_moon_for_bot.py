@@ -15,6 +15,7 @@ find_date_in_next_full_moon_question_String = ''.join(find_date_in_next_full_moo
 
 
 next_full_moon_date = datetime.strptime(find_date_in_next_full_moon_question_String, "%Y/%d/%m")
+
 print(ephem.next_full_moon(next_full_moon_date))
 
 
