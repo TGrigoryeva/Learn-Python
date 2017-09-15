@@ -215,7 +215,7 @@ def nextfullmoon(bot,update):
     find_date_in_next_full_moon_question_String = ''.join(find_date_in_next_full_moon_question).replace("-","/")
     print(find_date_in_next_full_moon_question_String)
 
-    next_full_moon_date = datetime.datetime.strptime(find_date_in_next_full_moon_question_String, "%Y/%d/%m")
+    next_full_moon_date = datetime.datetime.strptime(find_date_in_next_full_moon_question_String, "%Y/%m/%d")
     print(ephem.next_full_moon(next_full_moon_date))
 
     update.message.reply_text(ephem.next_full_moon(next_full_moon_date))
