@@ -83,7 +83,7 @@ def newborns_names():
     url_mos_ru = "https://apidata.mos.ru/v1/datasets/%s/rows/?api_key=%s" % (database_id, apikey_mos_ru)
     n_names = get_newborns_names(url_mos_ru)
 
-    header = '<html><head><title>Сведения о наиболее популярных женских именах среди новорожденных</title></head><body> <table border="1"> <tr><th>Number</th><th>Year</th><th>Name</th></tr>'
+    header = '<html><head><title>newborns names</title></head><body background="https://im0-tub-ru.yandex.net/i?id=8b7cebe68bf3cd40861a6f9bb3d5d142-l&n=13"><b>Сведения о наиболее популярных женских именах среди новорожденных</b><br><a href="https://data.mos.ru/opendata/2009">с этого сайта</a><br><br> <table border="1"> <tr><th>Number</th><th>Year</th><th>Name</th></tr>'
     footer = '</table> </body></html>'
 
     list_of_names = [header]
