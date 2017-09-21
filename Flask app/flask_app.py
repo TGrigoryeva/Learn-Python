@@ -80,25 +80,36 @@ def news_by_id(news_id):
 
 @app.route("/names")
 def newborns_names():
+
+    years = ["2015","2016","2017"]
     url_mos_ru = "https://apidata.mos.ru/v1/datasets/%s/rows/?api_key=%s" % (database_id, apikey_mos_ru)
     n_names = get_newborns_names(url_mos_ru)
+
+    year_filter = request.args.get("year") if request.args.get("year") in years else "all"
 
     header = '<html><head><title>newborns names</title></head><body background="https://im0-tub-ru.yandex.net/i?id=8b7cebe68bf3cd40861a6f9bb3d5d142-l&n=13"><b>Сведения о наиболее популярных женских именах среди новорожденных</b><br><a href="https://data.mos.ru/opendata/2009">с этого сайта</a><br><br> <table border="1"> <tr><th>Number</th><th>Year</th><th>Name</th></tr>'
     footer = '</table> </body></html>'
 
     list_of_names = [header]
 
-    for n in n_names:
-        list_of_names.append('<tr><td>') # tr открытие строки, td - открытие ячейки
-        list_of_names.append( '</td><td>'.join( list(map(str, [ n["Number"], n["Cells"]["Year"], n["Cells"]["Name"] ] )) ) )
-        list_of_names.append('</td></tr>')
+    if year_filter == "all":
+        for n in n_names:
+            list_of_names.append('<tr><td>') # tr открытие строки, td - открытие ячейки
+            list_of_names.append( '</td><td>'.join(map(str, [ n["Number"], n["Cells"]["Year"], n["Cells"]["Name"] ] )))
+            list_of_names.append('</td></tr>')
+    else:
+        for n in n_names:
+            if int(year_filter) == n["Cells"]["Year"]:
+                list_of_names.append('<tr><td>') # tr открытие строки, td - открытие ячейки
+                list_of_names.append( '</td><td>'.join(map(str, [ n["Number"], n["Cells"]["Year"], n["Cells"]["Name"] ] )))
+                list_of_names.append('</td></tr>')            
+
 
     list_of_names.append(footer)
 
     string_of_names = ''.join(list_of_names) # преобразовали лист в string
 
     return string_of_names
-
 
 
 # делаем так,чтобы flask приложение умело запускаться. 
@@ -109,7 +120,8 @@ if __name__ == "__main__": #если файл запускается напря�
 
 ''' 
 \n html игнорирует, поэтому переносим иначе строку)
-<p> - перенос текста на след строку
+<p> - новый абзац
+<br> - разрыв строки
 <b> - жирное выделение
 <h1> - главный заголовок сраницы
 <i> - наклонный текст
