@@ -215,10 +215,12 @@ def nextfullmoon(bot,update):
     find_date_in_next_full_moon_question_String = ''.join(find_date_in_next_full_moon_question).replace("-","/")
     print(find_date_in_next_full_moon_question_String)
 
-    next_full_moon_date = datetime.datetime.strptime(find_date_in_next_full_moon_question_String, "%Y/%m/%d")
-    print(ephem.next_full_moon(next_full_moon_date))
 
-    update.message.reply_text(ephem.next_full_moon(next_full_moon_date))
+    next_full_moon_date = ephem.next_full_moon(find_date_in_next_full_moon_question_String)
+    update.message.reply_text(str(next_full_moon_date))
+
+
+
 
 
 #var.2 advanced calc. не работает со скобками
