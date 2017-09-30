@@ -41,14 +41,14 @@ for game in wish_games:
 # нашли цены по ID игры из WISHLIST
 
     data = get_info("http://store.steampowered.com/api/appdetails?appids=%s&cc=ru" % (game_id))
-    name = data[game_id]["data"]["name"]
+    game_name = data[game_id]["data"]["name"]
     try:  # в Steam бывают игры без цены. устраняем KeyError. В БД не попадет
         prices = data[game_id]["data"]["price_overview"]
     except KeyError:
-        print(name)
+        print(game_name)
         print("Цена для данного продукта отсутствует\n")       
         continue
-    print(name)
+    print(game_name)
     print("http://store.steampowered.com/app/%s" % (game_id))
 
     if prices["discount_percent"] == 0:
