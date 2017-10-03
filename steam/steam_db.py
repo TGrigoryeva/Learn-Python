@@ -5,6 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey  # ForeignKey - отвечает за связь с другой таблицей
 from sqlalchemy.orm import relationship
+from sqlalchemy import UniqueConstraint
 
 engine = create_engine('sqlite:///steam.sqlite')  # выбираем БД, с которой будем работать (в данном случае sqlite). файл с БД будет называться blog.sqlite
 
@@ -19,7 +20,8 @@ class User(Base):  # i.e. class users derives from class base all capabilities
     __tablename__ = 'users'  # name of DB - "users"
     id = Column(Integer, primary_key=True)  # creating of columns for DB table. primary_key=True - it mrans ID will be primary key
     username = Column(String(100), unique=True)# 100 length of string (customized value)
- 
+    user_games = relationship("Games",secondary = "user_game")
+
     def __init__(self, username=None):  # эти переменные будем присваивать атрибутам класса (выше)
         self.username = username # это обращения к своему собственному атрибуту
 
@@ -31,6 +33,7 @@ class Games(Base): # создаем новый класс и таблицу
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer,unique=True)
     discount = Column(Float)
+    user = relationship("User", secondary = "user_game")
 
     def __init__(self, game_id=None, discount=None):
         self.game_id = game_id
@@ -44,6 +47,8 @@ class User_Game(Base): # создаем таблицу связей
     id = Column(Integer, primary_key=True)
     game_id = Column(Integer,ForeignKey('games.id'))
     user_id = Column(Integer,ForeignKey('users.id'))
+    __table_args__ = (UniqueConstraint('game_id','user_id', name='game_user_unique_pair'),
+                     )
 
     def __init__(self, game_id=None, user_id=None):
         self.game_id = game_id
