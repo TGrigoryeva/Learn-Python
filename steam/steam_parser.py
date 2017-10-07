@@ -8,7 +8,8 @@ from sqlalchemy import exc
 from sqlalchemy.orm import relationship
 import logging
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO,
                     filename='steam_parser.log'
                     )
 
@@ -21,9 +22,26 @@ def get_html(url):
         print ("Error")
         return False
 
-def wishlist_notifications(username):
-
+def check_username(username):
+    print(username)
     html = get_html("https://steamcommunity.com/id/%s/wishlist/" % (username))
+    bs = BeautifulSoup(html, "html.parser")
+    error = bs.find("div", class_="error_ctn")
+    hidden_page = bs.find("body", class_="flat_page profile_page private_profile responsive_page")
+    if error is None and hidden_page is None:
+        print("Юзернейм правильный")      
+    else:
+        print("Пользователя {} не существует, либо страница скрыта".format(username))
+        return False
+        
+def wishlist_notifications(username,command):
+    if check_username(username) is False:
+        return
+
+    wishlist_result = dict()
+    notifications_result = dict()
+
+    html = get_html("https://steamcommunity.com/id/%s/wishlist/" % (username))   
     #print(html)
 
     db_user = User.query.filter(User.username == username).first()  # будет значение None, если таких данных нет
@@ -49,6 +67,12 @@ def wishlist_notifications(username):
     for game in wish_games:
         game_id = re.search(r'([0-9]+)', game['id']).group(0)
         all_games.append(int(game_id))
+
+        # для передачи словаря в telegram
+        
+        wishlist_values = list()        
+        notifications_values = list()
+
     # нашли цены по ID игры из WISHLIST
 
         data = get_info("http://store.steampowered.com/api/appdetails?appids=%s&cc=ru" % (game_id))
@@ -57,15 +81,20 @@ def wishlist_notifications(username):
             prices = data[game_id]["data"]["price_overview"]
         except KeyError:
             print(game_name)
-            print("Цена для данного продукта отсутствует\n")       
+            print("Цена для данного продукта отсутствует\n")
+            wishlist_values.append("Цена для данного продукта отсутствует")
             continue
         print(game_name)
         print("http://store.steampowered.com/app/%s" % (game_id))
+        wishlist_values.append(game_name)
+        wishlist_values.append("http://store.steampowered.com/app/%s" % (game_id))
 
         if prices["discount_percent"] == 0:
             print(prices["initial"]/100,"RUB")
+            wishlist_values.extend([prices["initial"]/100,"RUB"])
         else:
-            print(prices["final"]/100,"RUB,","Скидка:",prices["discount_percent"],"%\nСтарая цена:", prices["initial"]/100,"RUB") 
+            print(prices["final"]/100,"RUB,","Скидка:",prices["discount_percent"],"%\nСтарая цена:", prices["initial"]/100,"RUB")
+            wishlist_values.extend([prices["final"]/100,"RUB,","Скидка: {} %".format(prices["discount_percent"]),"Старая цена:", prices["initial"]/100,"RUB"]) 
         print("\n")
 
         db_game = Games.query.filter(Games.game_id == game_id).first()
@@ -77,10 +106,14 @@ def wishlist_notifications(username):
             print("http://store.steampowered.com/app/%s" % (game_id))
             print(prices["final"]/100,"RUB,","Скидка:",prices["discount_percent"],"%\nСтарая цена:", prices["initial"]/100,"RUB")
             print("\n")
+            notifications_values.extend([game_name,"http://store.steampowered.com/app/%s" % (game_id),prices["final"]/100,"RUB,","Скидка: {} %".format(prices["discount_percent"]),"Старая цена:", prices["initial"]/100,"RUB"])
             db_game.discount = prices["discount_percent"]  # update discounts
         else:
             db_game.discount = prices["discount_percent"]  # update discounts
-            
+        
+        wishlist_result[game_id] = wishlist_values
+        notifications_result[game_id] = notifications_values
+
         game_db_id = db_game.id # get database game id
         # new unique relationship user-game added. If entry already exist, raise exception:
         try:
@@ -100,15 +133,22 @@ def wishlist_notifications(username):
             db_session.delete(row_to_delete)
             print("game {} deleted".format(value))
 
-    print(db_usergames,"db games")
-    print(all_games,"all games")
-
     db_session.commit()
+
+    if command == "wishlist":
+        return wishlist_result
+#        print(wishlist_result)
+    elif command == "notification":
+        return notifications_result
+#        print(notifications_result)
 
 
 if __name__ == "__main__":
-    username = "skaarj7"  # будет вводиться пользователем в сообщении telegram
-    wishlist_notifications(username)
+    username = "naash71"  # будет вводиться пользователем в сообщении telegram
+    command = "wishlist"  # команда из telegram
+    wishlist_notifications(username,command)
+#    check_username(username)
+
 '''
 PRICE HTML PARSER:
 wish_games_price = bs.find_all("div", "gameListPriceData")

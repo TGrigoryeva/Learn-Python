@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey  # ForeignKey - отвечает за связь с другой таблицей
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean  # ForeignKey - отвечает за связь с другой таблицей
 from sqlalchemy.orm import relationship
 from sqlalchemy import UniqueConstraint
 
@@ -19,7 +19,7 @@ Base.query = db_session.query_property()  # привязываем к declarativ
 class User(Base):  # i.e. class users derives from class base all capabilities
     __tablename__ = 'users'  # name of DB - "users"
     id = Column(Integer, primary_key=True)  # creating of columns for DB table. primary_key=True - it mrans ID will be primary key
-    username = Column(String(100), unique=True)# 100 length of string (customized value)
+    username = Column(String, unique=True)# 100 length of string (customized value)
     user_games = relationship("Games",secondary = "user_game")
 
     def __init__(self, username=None):  # эти переменные будем присваивать атрибутам класса (выше)
@@ -56,6 +56,22 @@ class User_Game(Base): # создаем таблицу связей
 
     def __repr__(self):
         return '<User_Game {} {} >'.format(self.game_id,self.user_id)
+
+class Chat(Base):
+    __tablename__ = 'chat'
+    id = Column(Integer, primary_key=True)
+    chat_id = Column(Integer, unique=True)
+    notifications = Column(Boolean, default = False)
+    username = Column(Integer)
+
+    def __init__(self, chat_id=None, notifications=None, username = None):
+        self.chat_id = chat_id
+        self.notifications = notifications
+        self.username = username
+
+    def __repr__(self):
+        return '<Chat {} {} {}>'.format(self.chat_id,self.notifications,self.username)
+
 
 # Создадим нашу базу данных:
 if __name__ == "__main__":
