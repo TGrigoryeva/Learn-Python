@@ -34,12 +34,14 @@ def notification(bot, update):
     else:
         tel_chat_id = update['message']['chat']['id']
         print(tel_chat_id)
-        try:
+        db_tel_chat_id = Chat.query.filter(Chat.chat_id == tel_chat_id).first()
+        print(db_tel_chat_id)
+        if db_tel_chat_id is None:
             db_session.add(Chat(tel_chat_id, True, user_text))
+            db_session.commit()
             update.message.reply_text("Подписка включена")
-        except:
+        else:
             update.message.reply_text("Для новой подписки отмените предыдущую")
-        db_session.commit()        
 
 def off(bot, update):
     tel_chat_id = update['message']['chat']['id']    
@@ -47,10 +49,9 @@ def off(bot, update):
         row_to_delete = db_session.query(Chat).filter(Chat.chat_id == tel_chat_id).first()
         db_session.delete(row_to_delete)
         update.message.reply_text("Подписка отключена")
-    else:
+    except:
         update.message.reply_text("Что-то пошло не так")
     db_session.commit()
-
 
 def main():
     updater = Updater(key)
