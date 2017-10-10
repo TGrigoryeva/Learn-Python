@@ -13,6 +13,7 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     filename='steam_parser.log'
                     )
 
+
 def get_html(url):
     try:
         result = requests.get(url)
@@ -106,13 +107,24 @@ def wishlist_notifications(username,command):
             print("http://store.steampowered.com/app/%s" % (game_id))
             print(prices["final"]/100,"RUB,","Скидка:",prices["discount_percent"],"%\nСтарая цена:", prices["initial"]/100,"RUB")
             print("\n")
-            notifications_values.extend([game_name,"http://store.steampowered.com/app/%s" % (game_id),prices["final"]/100,"RUB,","Скидка: {} %".format(prices["discount_percent"]),"Старая цена:", prices["initial"]/100,"RUB"])
+            notifications_values.extend([
+                game_name,
+                "http://store.steampowered.com/app/%s" % (game_id),
+                prices["final"]/100,
+                "RUB,",
+                "Скидка: {} %".format(prices["discount_percent"]),
+                "Старая цена:", 
+                prices["initial"]/100,
+                "RUB"
+                ])
+
             db_game.discount = prices["discount_percent"]  # update discounts
         else:
             db_game.discount = prices["discount_percent"]  # update discounts
         
         wishlist_result[game_id] = wishlist_values
         notifications_result[game_id] = notifications_values
+#        print(notifications_values)
 
         game_db_id = db_game.id # get database game id
         # new unique relationship user-game added. If entry already exist, raise exception:
@@ -139,13 +151,13 @@ def wishlist_notifications(username,command):
         return wishlist_result
 #        print(wishlist_result)
     elif command == "notification":
+        print(notifications_result)
         return notifications_result
-#        print(notifications_result)
-
+        
 
 if __name__ == "__main__":
     username = "naash71"  # будет вводиться пользователем в сообщении telegram
-    command = "wishlist"  # команда из telegram
+    command = "notification"  # команда из telegram
     wishlist_notifications(username,command)
 #    check_username(username)
 

@@ -12,6 +12,11 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     filename='bot.log'
                     )
 
+db_query = Chat.query.all()
+for chat in db_query:
+    result = wishlist_notifications(chat.username,"notification")
+    print("telegram message: ", result)
+
 def greet_user(bot, update):
     update.message.reply_text("Для просмотра вишлиста отправьте сообщение с юзернеймом из персональной ссылки Steam\nhttр://steamcommunity.cоm/id/username\n\nДля подписки на уведомления отправьте команду в формате:\n /notification username\n\nИспользуйте /off, чтобы приостановить подписку.") # клавиатура появится сразу после этого сообщения
 
