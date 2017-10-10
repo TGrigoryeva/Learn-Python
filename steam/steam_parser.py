@@ -39,8 +39,9 @@ def wishlist_notifications(username,command):
     if check_username(username) is False:
         return
 
-    wishlist_result = dict()
-    notifications_result = dict()
+    # для передачи в telegram
+    wishlist_result = list()
+    notifications_result = list()
 
     html = get_html("https://steamcommunity.com/id/%s/wishlist/" % (username))   
     #print(html)
@@ -69,11 +70,6 @@ def wishlist_notifications(username,command):
         game_id = re.search(r'([0-9]+)', game['id']).group(0)
         all_games.append(int(game_id))
 
-        # для передачи словаря в telegram
-        
-        wishlist_values = list()        
-        notifications_values = list()
-
     # нашли цены по ID игры из WISHLIST
 
         data = get_info("http://store.steampowered.com/api/appdetails?appids=%s&cc=ru" % (game_id))
@@ -83,19 +79,19 @@ def wishlist_notifications(username,command):
         except KeyError:
             print(game_name)
             print("Цена для данного продукта отсутствует\n")
-            wishlist_values.append("Цена для данного продукта отсутствует")
+            wishlist_result.extend([game_name,"Цена для данного продукта отсутствует\n"])
             continue
         print(game_name)
         print("http://store.steampowered.com/app/%s" % (game_id))
-        wishlist_values.append(game_name)
-        wishlist_values.append("http://store.steampowered.com/app/%s" % (game_id))
+        wishlist_result.extend([game_name])
+        wishlist_result.append("http://store.steampowered.com/app/%s" % (game_id))
 
         if prices["discount_percent"] == 0:
             print(prices["initial"]/100,"RUB")
-            wishlist_values.extend([prices["initial"]/100,"RUB"])
+            wishlist_result.extend(["{} RUB\n".format(prices["initial"]/100)])
         else:
             print(prices["final"]/100,"RUB,","Скидка:",prices["discount_percent"],"%\nСтарая цена:", prices["initial"]/100,"RUB")
-            wishlist_values.extend([prices["final"]/100,"RUB,","Скидка: {} %".format(prices["discount_percent"]),"Старая цена:", prices["initial"]/100,"RUB"]) 
+            wishlist_result.extend(["{} RUB, Скидка: {} %".format(prices["final"]/100, prices["discount_percent"]),"Старая цена: {} RUB\n".format(prices["initial"]/100)]) 
         print("\n")
 
         db_game = Games.query.filter(Games.game_id == game_id).first()
@@ -122,9 +118,6 @@ def wishlist_notifications(username,command):
         else:
             db_game.discount = prices["discount_percent"]  # update discounts
         
-        wishlist_result[game_id] = wishlist_values
-        notifications_result[game_id] = notifications_values
-#        print(notifications_values)
 
         game_db_id = db_game.id # get database game id
         # new unique relationship user-game added. If entry already exist, raise exception:
@@ -149,7 +142,7 @@ def wishlist_notifications(username,command):
 
     if command == "wishlist":
         return wishlist_result
-#        print(wishlist_result)
+        print(wishlist_result)
     elif command == "notification":
         print(notifications_result)
         return notifications_result
@@ -157,7 +150,7 @@ def wishlist_notifications(username,command):
 
 if __name__ == "__main__":
     username = "naash71"  # будет вводиться пользователем в сообщении telegram
-    command = "notification"  # команда из telegram
+    command = "wishlist"  # команда из telegram
     wishlist_notifications(username,command)
 #    check_username(username)
 

@@ -20,7 +20,7 @@ for chat in db_query:
 def greet_user(bot, update):
     update.message.reply_text("Для просмотра вишлиста отправьте сообщение с юзернеймом из персональной ссылки Steam\nhttр://steamcommunity.cоm/id/username\n\nДля подписки на уведомления отправьте команду в формате:\n /notification username\n\nИспользуйте /off, чтобы приостановить подписку.") # клавиатура появится сразу после этого сообщения
 
-def talk_to_me(bot, update):
+def wishlist(bot, update):
     user_text = update.message.text # устранить ошибки с пробелами. с большими буквами ошибки не будет
     print(user_text)
     if check_username(user_text) is False:
@@ -28,9 +28,9 @@ def talk_to_me(bot, update):
     else:
         my_data = wishlist_notifications(user_text,"wishlist")  # тут словарь лежит
         print(my_data)
-        for key,value in my_data.items():
-                print(value)
-                update.message.reply_text(value)
+        telegram_wishlist = "\n".join(map(str,my_data))
+        print(telegram_wishlist)
+        update.message.reply_text(telegram_wishlist)
         
 def notification(bot, update):
     user_text = update.message.text[13:].replace(" ","")   
@@ -62,7 +62,7 @@ def main():
     updater = Updater(key)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
-    dp.add_handler(MessageHandler(Filters.text, talk_to_me))
+    dp.add_handler(MessageHandler(Filters.text, wishlist))
     dp.add_handler(CommandHandler("notification", notification))
     dp.add_handler(CommandHandler("off", off))
 #    updater.dispatcher.add_handler(CallbackQueryHandler(button))
@@ -73,4 +73,3 @@ def main():
     updater.idle()
 
 main()
-
