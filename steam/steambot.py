@@ -1,9 +1,6 @@
 
 import requests # позволяет получать инфо от сервера
 import json
-import re # регулярные выражения
-from bs4 import BeautifulSoup # Beautiful Soup sits atop an HTML or XML parser, providing Pythonic idioms for iterating, searching, and modifying the parse tree.
-
 
 def get_info(url):
     result = requests.get(url)
@@ -12,26 +9,6 @@ def get_info(url):
         return result.json()
     else:
         print("Something went wrong")
-    
-
-
-'''
-    def get_wishlist(self):
-        """Retrieves all appids for games on a user's wishlist (scrapes it, no API call available)."""
-        url = "http://steamcommunity.com/profiles/{}/wishlist".format(self.steam_id)  
-        soup = BeautifulSoup(self._open_url(url))
-        wish_games = soup.findAll("div", "wishlistRow")
-        all_games = []
-
-        for game in wish_games:
-            current_id = game['id']
-            if current_id:
-                search = re.search(r'([0-9]+)', current_id)
-                if search:
-                    all_games.append(int(search.group(1)))
-
-return all_games
-'''
 
 if __name__ == "__main__":
     game_id = "271590"
@@ -44,12 +21,6 @@ if __name__ == "__main__":
     for key,values in prices.items():
         print(key,":",values)
 
-'''
-    if prices["discount_percent"] == 0:
-        print(prices["currency"],prices["initial"])
-    else:
-        print(prices["currency"],prices["initial"],prices["discount_percent"],prices["final"])
-'''
 
 '''
 при вызове функции мы получили данные в формате json. это НЕ питоновский словарь, но питон может ее преобразовать
@@ -57,7 +28,6 @@ if __name__ == "__main__":
 
 ("https://apidata.mos.ru/v1/datasets/2009/rows/?api_key=c6a37e0e2a6057df193aee1ade88e16f")
 '''
-
 
 
 '''
