@@ -44,7 +44,6 @@ def wishlist_notifications(username,command):
     notifications_result = list()
 
     html = get_html("https://steamcommunity.com/id/%s/wishlist/" % (username))   
-    #print(html)
 
     db_user = User.query.filter(User.username == username).first()  # будет значение None, если таких данных нет
     # add new username to DB 
@@ -91,33 +90,36 @@ def wishlist_notifications(username,command):
             wishlist_result.extend(["{} RUB\n".format(prices["initial"]/100)])
         else:
             print(prices["final"]/100,"RUB,","Скидка:",prices["discount_percent"],"%\nСтарая цена:", prices["initial"]/100,"RUB")
-            wishlist_result.extend(["{} RUB, Скидка: {} %".format(prices["final"]/100, prices["discount_percent"]),"Старая цена: {} RUB\n".format(prices["initial"]/100)]) 
+            wishlist_result.extend([
+                "{} RUB, Скидка: {} %".format(prices["final"]/100, prices["discount_percent"]),
+                "Старая цена: {} RUB\n".format(prices["initial"]/100)
+                ]) 
         print("\n")
 
         db_game = Games.query.filter(Games.game_id == game_id).first()
+
         if db_game is None:
-            db_session.add(Games(game_id, prices["discount_percent"]))  # new game added to database
+            db_session.add(Games(game_id, game_name, prices["discount_percent"]))  # new game added to database
             db_game = Games.query.filter(Games.game_id == game_id).first()
+
         elif prices["discount_percent"] > db_game.discount:  # notification about discount
             print(game_name)
             print("http://store.steampowered.com/app/%s" % (game_id))
             print(prices["final"]/100,"RUB,","Скидка:",prices["discount_percent"],"%\nСтарая цена:", prices["initial"]/100,"RUB")
             print("\n")
-            notifications_values.extend([
+            print("new discount")
+            notifications_result.extend([
                 game_name,
                 "http://store.steampowered.com/app/%s" % (game_id),
-                prices["final"]/100,
-                "RUB,",
-                "Скидка: {} %".format(prices["discount_percent"]),
-                "Старая цена:", 
-                prices["initial"]/100,
-                "RUB"
+                "{} RUB, Скидка: {} %".format(prices["final"]/100, prices["discount_percent"]),
+                "Старая цена: {} RUB\n".format(prices["initial"]/100)
                 ])
 
             db_game.discount = prices["discount_percent"]  # update discounts
+            db_session.commit()
         else:
             db_game.discount = prices["discount_percent"]  # update discounts
-        
+            db_session.commit()  # почему с коммитом ниже не исполняется код?
 
         game_db_id = db_game.id # get database game id
         # new unique relationship user-game added. If entry already exist, raise exception:
@@ -132,8 +134,10 @@ def wishlist_notifications(username,command):
         if not db_usergames:
             print("db_usergames list is empty, pass")
         elif value not in all_games:
-    # if game has been removed from wishlist, remove entry from db User_Game table:        
-            row_to_delete = db_session.query(User_Game).filter(User_Game.game_id == game_db_id, User_Game.user_id == user_db_id).all()
+    # if game has been removed from wishlist, remove entry from db User_Game table:  
+            db_game = Games.query.filter(Games.game_id == value).first()
+            game_db_id = db_game.id
+            row_to_delete = db_session.query(User_Game).filter(User_Game.game_id == game_db_id, User_Game.user_id == user_db_id).first()
             print(row_to_delete,"row to delete")
             db_session.delete(row_to_delete)
             print("game {} deleted".format(value))
