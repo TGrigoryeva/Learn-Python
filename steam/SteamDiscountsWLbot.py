@@ -6,6 +6,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from steam_parser import wishlist_notifications, check_username
 import re
 from steam_db import db_session, Chat
+from datetime import timedelta
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
@@ -68,7 +69,10 @@ def callback_minute(bot, job):
         result = wishlist_notifications(chat.username,"notification")
         print("telegram message: ", result)
         telegram_notification = "\n".join(map(str,result))
-        bot.sendMessage(chat_id = chat.chat_id, text = telegram_notification)
+        try:
+            bot.sendMessage(chat_id = chat.chat_id, text = telegram_notification)
+        except:
+            pass
 
 def main():
     updater = Updater(key)
@@ -80,6 +84,7 @@ def main():
     dp.add_handler(CommandHandler("off", off))
     dp.add_handler(MessageHandler(Filters.photo, photo))
     job_minute = j.run_repeating(callback_minute, interval=60, first=0)
+#    job_minute = j.run_repeating(callback_minute, interval = timedelta(hours = 1), first=0)
 
 
 #    updater.dispatcher.add_handler(CallbackQueryHandler(button))
