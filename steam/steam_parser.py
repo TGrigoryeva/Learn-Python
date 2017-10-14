@@ -39,7 +39,7 @@ def wishlist_notifications(username,command):
     if check_username(username) is False:
         return
 
-    # для передачи в telegram
+    # return variables for telegram
     wishlist_result = list()
     notifications_result = list()
 
@@ -52,12 +52,6 @@ def wishlist_notifications(username,command):
         db_user = User.query.filter(User.username == username).first()  # <User naash71> - то, что получим
 
     user_db_id = db_user.id  # get database user id
-
-    # get list of user games from DB
-    g = db_session.query(Games).filter(Games.user.any(User.username == username)).all()  # get db_usergames through filter by username
-    db_usergames = []
-    for row in g:
-        db_usergames.append(row.game_id)
 
     bs = BeautifulSoup(html, "html.parser")
     wish_games = bs.find_all("div", "wishlistRow")
@@ -128,6 +122,12 @@ def wishlist_notifications(username,command):
             db_session.flush()
         except exc.IntegrityError:
             db_session.rollback()
+
+    # get list of user games from DB
+    g = db_session.query(Games).filter(Games.user.any(User.username == username)).all()  # get db_usergames through filter by username
+    db_usergames = []
+    for row in g:
+        db_usergames.append(row.game_id)
 
     #  check if user has deleted game from steam wishlist
     for value in db_usergames:
