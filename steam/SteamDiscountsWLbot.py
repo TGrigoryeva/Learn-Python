@@ -55,9 +55,10 @@ def off(bot, update):
         row_to_delete = db_session.query(Chat).filter(Chat.chat_id == tel_chat_id).first()
         db_session.delete(row_to_delete)
         update.message.reply_text("Подписка отключена")
+        db_session.commit()
     except:
         update.message.reply_text("Что-то пошло не так")
-    db_session.commit()
+    
 
 def photo(bot, update):
     print ("Got photo")
