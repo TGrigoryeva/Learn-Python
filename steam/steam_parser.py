@@ -30,7 +30,8 @@ def check_username(username):
     error = bs.find("div", class_="error_ctn")
     hidden_page = bs.find("body", class_="flat_page profile_page private_profile responsive_page")
     if error is None and hidden_page is None:
-        print("Юзернейм правильный")      
+        print("Юзернейм правильный")
+        return True      
     else:
         print("Пользователя {} не существует, либо страница скрыта".format(username))
         return False

@@ -19,7 +19,7 @@ def greet_user(bot, update):
 def wishlist(bot, update):
     user_text = update.message.text.replace(" ","")
     print(user_text)
-    if check_username(user_text) is False:
+    if not check_username(user_text):
         update.message.reply_text("Пользователя {} не существует, либо страница скрыта".format(user_text))
     else:
         my_data = wishlist_notifications(user_text,"wishlist")  # тут словарь лежит
@@ -33,7 +33,7 @@ def wishlist(bot, update):
         
 def notification(bot, update):
     user_text = update.message.text[13:].replace(" ","")   
-    if check_username(user_text) is False:
+    if not check_username(user_text):
         update.message.reply_text("Пользователя {} не существует, либо страница скрыта".format(user_text))
     else:
         tel_chat_id = update.message.chat_id
